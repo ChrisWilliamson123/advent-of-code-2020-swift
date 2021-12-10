@@ -2,10 +2,11 @@ import Foundation
 
 func main() throws {
     let isTestMode = CommandLine.arguments.contains("test")
-    let instructions: [String] = try readInput(fromTestFile: isTestMode)
+    let input: [String] = try readInput(fromTestFile: isTestMode)
+    let instructions = buildInstructions(from: input)
     
-    let processor = Processor(instructions)
-    try? processor.execute()
+    let processor = Processor()
+    try? processor.execute(instructions)
     print("Part 1:", processor.accumulator)
 
     let nops = processor.nopsExecuted
@@ -17,7 +18,7 @@ func main() throws {
     for p in patches {
         processor.reset()
         do {
-            try processor.execute(patch: p)
+            try processor.execute(instructions.applyPatch(p))
             break
         } catch {
             continue
@@ -26,26 +27,21 @@ func main() throws {
     print("Part 2:", processor.accumulator)
 }
 
+try main()
+
 class Processor {
     typealias Instruction = (operation: String, value: Int)
+    typealias Patch = (instructionIndex: Int, newOperation: String)
 
     private(set) var accumulator = 0
+
     private var instructionPointer = 0
+
     private var instructionsExecuted: Set<Int> = []
     private(set) var nopsExecuted: [Int] = []
     private(set) var jmpsExecuted: [Int] = []
 
-    private let instructions: [Instruction]
-
-    init(_ instructions: [String]) {
-        self.instructions = instructions.map({
-            let split = $0.split(separator: " ")
-            return (String(split[0]), Int(split[1])!)
-        })
-    }
-
-    func execute(instructions: [Instruction]? = nil) throws {
-        let instructions = instructions ?? self.instructions
+    func execute(_ instructions: [Instruction]) throws {
         while true {
             if instructionPointer >= instructions.count { return }
             if instructionsExecuted.contains(instructionPointer) {
@@ -72,13 +68,6 @@ class Processor {
         }
     }
 
-    typealias Patch = (instructionIndex: Int, newOperation: String)
-
-    func execute(patch: Patch) throws {
-        var instructions = self.instructions
-        instructions[patch.instructionIndex].operation = patch.newOperation
-        try execute(instructions: instructions)
-    }
 
     func reset() {
         accumulator = 0
@@ -88,22 +77,23 @@ class Processor {
         jmpsExecuted = []
     }
 
-    // struct InvalidOperationError: LocalizedError {
-
-    //     let operation: String
-
-    //     var errorDescription: String? { "Invalid operation: \(operation)" }
-    // }
-
-    // struct InfiniteLoopError: LocalizedError {
-
-    //     var errorDescription: String? { "The processor has hit an infinite loop" }
-    // }
-
     enum ProcessorError: Error {
         case invalidOperation
         case infiniteLoop
     }
 }
 
-try main()
+extension Array where Element == Processor.Instruction {
+    func applyPatch(_ patch: Processor.Patch) -> [Processor.Instruction] {
+        var mutable = self
+        mutable[patch.instructionIndex].operation = patch.newOperation
+        return mutable
+    }
+}
+
+private func buildInstructions(from instructionStrings: [String]) -> [Processor.Instruction] {
+    instructionStrings.map({
+        let split = $0.split(separator: " ")
+        return (String(split[0]), Int(split[1])!)
+    })
+}
