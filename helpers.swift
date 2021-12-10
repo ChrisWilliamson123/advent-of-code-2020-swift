@@ -116,3 +116,21 @@ struct Regex {
         })
     }
 }
+
+func getCombinations(input: [Int], count: Int) -> [[Int]] {
+    if count == 0 { return [[]] }
+
+    if count == 1 { return input.map({ [$0] }) }
+
+    let previousCombinations = getCombinations(input: input, count: count - 1)
+    
+    var combinations: [[Int]] = []
+
+    for i in (0..<input.count) {
+        for j in (0..<previousCombinations.count) where !previousCombinations[j].contains(input[i]) {
+            combinations.append(previousCombinations[j] + [input[i]])
+        }
+    }
+
+    return combinations
+}
