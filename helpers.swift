@@ -193,7 +193,7 @@ struct Coordinate: Hashable {
         // Calculate the radius, think of this as the hypotenuse of the triangle
         let radius = sqrt(dx * dx + dy * dy)
 
-        // Azimuth is the clockwise angle from north to the hypotenuse line
+        // Current angle between the x axis and the hypotenuse
         let azimuth = atan2(dy, dx)
 
         // Translate the azimuth by our translation amount
