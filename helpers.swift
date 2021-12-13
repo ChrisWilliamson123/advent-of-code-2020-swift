@@ -186,11 +186,20 @@ struct Coordinate: Hashable {
     }
 
     func rotatePoint(aroundOrigin origin: Coordinate, byDegrees: CGFloat) -> Coordinate {
+        // Get the difference in x and y values between self and the origin
         let dx = Double(x - origin.x)
         let dy = Double(y - origin.y)
+
+        // Calculate the radius, think of this as the hypotenuse of the triangle
         let radius = sqrt(dx * dx + dy * dy)
-        let azimuth = atan2(dy, dx) // in radians
+
+        // Azimuth is the clockwise angle from north to the hypotenuse line
+        let azimuth = atan2(dy, dx)
+
+        // Translate the azimuth by our translation amount
         let newAzimuth = azimuth + byDegrees * .pi / 180 // convert it to radians
+
+        // Create the new x and y values based on the radius and new azimuth
         let x = Double(origin.x) + radius * cos(newAzimuth)
         let y = Double(origin.y) + radius * sin(newAzimuth)
 
