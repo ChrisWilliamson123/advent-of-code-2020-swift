@@ -184,4 +184,40 @@ struct Coordinate: Hashable {
 
         return Coordinate(foldLine.axis == .y ? x : newValue, foldLine.axis == .y ? newValue : y)
     }
+
+    func rotatePoint(aroundOrigin origin: Coordinate, byDegrees: CGFloat) -> Coordinate {
+        let dx = Double(x - origin.x)
+        let dy = Double(y - origin.y)
+        let radius = sqrt(dx * dx + dy * dy)
+        let azimuth = atan2(dy, dx) // in radians
+        let newAzimuth = azimuth + byDegrees * .pi / 180 // convert it to radians
+        let x = Double(origin.x) + radius * cos(newAzimuth)
+        let y = Double(origin.y) + radius * sin(newAzimuth)
+
+        return Coordinate(Int(x.rounded()), Int(y.rounded()))
+    }
+}
+
+extension RangeReplaceableCollection {
+    func rotatingLeft(positions: Int) -> SubSequence {
+        let index = self.index(startIndex, offsetBy: positions, limitedBy: endIndex) ?? endIndex
+        return self[index...] + self[..<index]
+    }
+    mutating func rotateLeft(positions: Int) {
+        let index = self.index(startIndex, offsetBy: positions, limitedBy: endIndex) ?? endIndex
+        let slice = self[..<index]
+        removeSubrange(..<index)
+        insert(contentsOf: slice, at: endIndex)
+    }
+
+    func rotatingRight(positions: Int) -> SubSequence {
+        let index = self.index(endIndex, offsetBy: -positions, limitedBy: startIndex) ?? startIndex
+        return self[index...] + self[..<index]
+    }
+    mutating func rotateRight(positions: Int) {
+        let index = self.index(endIndex, offsetBy: -positions, limitedBy: startIndex) ?? startIndex
+        let slice = self[index...]
+        removeSubrange(index...)
+        insert(contentsOf: slice, at: startIndex)
+    }
 }
