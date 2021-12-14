@@ -63,20 +63,32 @@ extension String {
         return count
     }
 
-    subscript (i: Int) -> String {
-        return self[i ..< i + 1]
-    }
-
-    subscript (i: Int) -> Character {
-        return [Character](self[i ..< i + 1])[0]
-    }
-
     func substring(fromIndex: Int) -> String {
         return self[min(fromIndex, length) ..< length]
     }
 
     func substring(toIndex: Int) -> String {
         return self[0 ..< max(0, toIndex)]
+    }
+
+    func pad(string : String, toSize: Int) -> String {
+        var padded = string
+        for _ in 0..<(toSize - string.count) {
+            padded = "0" + padded
+        }
+        return padded
+    }
+
+    func padded(toSize: Int, with character: Character = "0") -> String {
+        Array(repeating: String(character), count: toSize - self.count).joined() + self
+    }
+
+    subscript (i: Int) -> String {
+        self[i ..< i + 1]
+    }
+
+    subscript (i: Int) -> Character {
+        [Character](self[i ..< i + 1])[0]
     }
 
     subscript (r: Range<Int>) -> String {

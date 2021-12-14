@@ -20,7 +20,8 @@ func main() throws {
         let groups = memRegex.getMatches(in: line)
         let inst: MemoryInstruction = (Int(groups[0])!, Int(groups[1])!)
 
-        let valueBinString = pad(string: String(inst.value, radix: 2), toSize: 36)
+        // let valueBinString = pad(string: String(inst.value, radix: 2), toSize: 36)
+        let valueBinString = String(inst.value, radix: 2).padded(toSize: 36)
         let masked = applyMask(mask, to: valueBinString)
         let maskedDecimal = Int(masked, radix: 2)!
         memory[inst.index] = maskedDecimal
@@ -41,7 +42,7 @@ func main() throws {
         let groups = memRegex.getMatches(in: line)
         let inst: MemoryInstruction = (Int(groups[0])!, Int(groups[1])!)
 
-        let memoryBinString = pad(string: String(inst.index, radix: 2), toSize: 36)
+        let memoryBinString = String(inst.index, radix: 2).padded(toSize: 36)
         let maskedResults = applyMemoryMask(mask, to: memoryBinString)
 
         for addr in maskedResults {
@@ -89,7 +90,7 @@ func applyMemoryMask(_ mask: String, to input: String) -> [String] {
 
     var result: [String] = []
     let combinations = pow2(2, xCount)
-    let binStrings = (0..<combinations).map({ pad(string: String($0, radix: 2), toSize: xCount) })
+    let binStrings = (0..<combinations).map({ String($0, radix: 2).padded(toSize: xCount) })
 
     for binaryString in binStrings {
         var thisMasked = [Character](masked)
@@ -106,14 +107,6 @@ func pow2(_ base:Int, _ power:Int) -> Int {
     var answer : Int = 1
     for _ in 0..<power { answer *= base }
     return answer
-}
-
-func pad(string : String, toSize: Int) -> String {
-    var padded = string
-    for _ in 0..<(toSize - string.count) {
-        padded = "0" + padded
-    }
-    return padded
 }
 
 try main()
