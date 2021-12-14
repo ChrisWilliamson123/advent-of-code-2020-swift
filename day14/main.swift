@@ -89,7 +89,7 @@ func applyMemoryMask(_ mask: String, to input: String) -> [String] {
     if xCount == 0 { return [String(masked)] }
 
     var result: [String] = []
-    let combinations = pow2(2, xCount)
+    let combinations = power(2, xCount)
     let binStrings = (0..<combinations).map({ String($0, radix: 2).padded(toSize: xCount) })
 
     for binaryString in binStrings {
@@ -101,12 +101,6 @@ func applyMemoryMask(_ mask: String, to input: String) -> [String] {
     }
 
     return result
-}
-
-func pow2(_ base:Int, _ power:Int) -> Int {
-    var answer : Int = 1
-    for _ in 0..<power { answer *= base }
-    return answer
 }
 
 try main()

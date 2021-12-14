@@ -242,3 +242,9 @@ extension RangeReplaceableCollection {
         insert(contentsOf: slice, at: startIndex)
     }
 }
+
+func power(_ base: Int, _ power: Int) -> Int {
+    var answer: Int = 1
+    for _ in 0..<power { answer *= base }
+    return answer
+}
